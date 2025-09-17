@@ -1,7 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+void function_text(){
 
+};
 // TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 int main() {
 
@@ -11,8 +13,7 @@ int main() {
 
     int* variable_heap = malloc(sizeof(int));
     *variable_heap = 53;
-    void function_text();
-    void *mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset);
+    void* variable_mmap = mmap(NULL, 1000, 2, 0x02, 0, 0);
     printf("%p \n", (void*)&variable_DATA);
     printf("%p \n", (void*)&variable_BSS);
     printf("%p \n", (void*)variable_STR);
