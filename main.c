@@ -1,5 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <sys/mman.h>
+#include <unistd.h>
+
 
 void function_text(){
 
@@ -9,17 +12,32 @@ int main() {
 
     static int variable_DATA = 13;
     static int variable_BSS=0;
+    int variable_stack=6;
     char* variable_STR = "je suis un message bienveillant";
 
     int* variable_heap = malloc(sizeof(int));
     *variable_heap = 53;
     void* variable_mmap = mmap(NULL, 1000, 2, 0x02, 0, 0);
-    printf("%p \n", (void*)&variable_DATA);
-    printf("%p \n", (void*)&variable_BSS);
-    printf("%p \n", (void*)variable_STR);
-    printf("%p \n", (void*)variable_heap);
-    printf("%p \n", (void*)function_text);
-    printf("%p \n", (void*)mmap);
+
+    printf("Adress DATA is %p \n", (void*)&variable_DATA);
+    printf("Adress BSS is %p \n", (void*)&variable_BSS);
+    printf("Adress STR is %p \n", (void*)variable_STR);
+    printf("Adress HEAP is %p \n", (void*)variable_heap);
+    printf("Adress MAIN FUNCTION is %p \n", (void*)function_text);
+    printf("Adress LIBC is %p \n",(void*)printf);
+    printf("Adress MMAP is %p \n", (void*)variable_mmap);
+    printf("Adress STACK is %p \n", (void*)&variable_stack);
+
+    pid_t pid = getpid();
+    char cmd[64];
+    snprintf(cmd, sizeof(cmd), "pmap -X %d", pid);
+    system(cmd);
+
+
+    munmap(variable_mmap, 1000);
+    free(variable_heap);
+
+    return 0;
     }
 
 
