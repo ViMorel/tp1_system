@@ -1,7 +1,10 @@
-#include <stdlib.h>
 #include <stdio.h>
-#include <sys/mman.h>
+#include <stdlib.h>
 #include <unistd.h>
+#include <sys/mman.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <stdint.h>
 
 
 void function_text(){
@@ -28,10 +31,25 @@ int main() {
     printf("Adress MMAP is %p \n", (void*)variable_mmap);
     printf("Adress STACK is %p \n", (void*)&variable_stack);
 
-    pid_t pid = getpid();
-    char cmd[64];
-    snprintf(cmd, sizeof(cmd), "pmap -X %d", pid);
-    system(cmd);
+    pid_t pid = fork();
+
+    if (pid == 0) {
+        // child
+        char pid_str[16];
+        snprintf(pid_str, sizeof(pid_str), "%d", getpid());
+
+        char *args[] = {"pmap", "-X", pid_str, NULL};
+        execvp("pmap", args);
+
+        perror("execvp failed");
+        exit(EXIT_FAILURE);
+    } else if (pid > 0) {
+        // parent
+        wait(NULL);
+    } else {
+        perror("fork failed");
+        return 1;
+    }
 
 
     munmap(variable_mmap, 1000);
